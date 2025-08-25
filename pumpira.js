@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             // Sort by code
             currencyOptions.sort((a, b) => a.code.localeCompare(b.code));
-            // Populate datalist
+            // Populate datalist with value as symbol, label as full info
             currencyOptions.forEach(opt => {
                 const option = document.createElement('option');
                 option.value = opt.symbol;
