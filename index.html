@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pumpira</title>
+    <!-- Google Fonts for beautiful typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons (latest free version) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css">
+    <!-- Your custom styles -->
+    <link rel="stylesheet" href="pumpira.css">
+    <!-- jsPDF for PDF export (latest version) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/3.0.1/jspdf.umd.min.js"></script>
+    <!-- html2canvas for capturing preview (latest version) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Pumpira: Create Professional Invoices in Minutes</h1>
+        <p>Free, easy, and best for your business. No sign-up required!</p>
+    </header>
+    <main>
+        <section id="form-section">
+            <h2>Fill in Your Details</h2>
+            <div class="input-group">
+                <label for="business-name">Business Name</label>
+                <input type="text" id="business-name" placeholder="Your Business Name">
+            </div>
+            <div class="input-group">
+                <label for="business-address">Business Address</label>
+                <textarea id="business-address" placeholder="Your Address"></textarea>
+            </div>
+            <div class="input-group">
+                <label for="business-email">Business Email</label>
+                <input type="email" id="business-email" placeholder="email@business.com">
+            </div>
+            <div class="input-group">
+                <label for="business-phone">Business Phone</label>
+                <input type="tel" id="business-phone" placeholder="+1 (123) 456-7890">
+            </div>
+            <div class="input-group">
+                <label for="logo-upload">Upload Logo (Optional)</label>
+                <input type="file" id="logo-upload" accept="image/*">
+            </div>
+            <div class="input-group">
+                <label for="client-name">Client Name</label>
+                <input type="text" id="client-name" placeholder="Client Name">
+            </div>
+            <div class="input-group">
+                <label for="client-address">Client Address</label>
+                <textarea id="client-address" placeholder="Client Address"></textarea>
+            </div>
+            <div class="input-group">
+                <label for="client-email">Client Email</label>
+                <input type="email" id="client-email" placeholder="client@email.com">
+            </div>
+            <div class="input-group">
+                <label for="invoice-number">Invoice Number</label>
+                <input type="text" id="invoice-number" placeholder="INV-001">
+            </div>
+            <div class="input-group">
+                <label for="invoice-date">Invoice Date</label>
+                <input type="date" id="invoice-date">
+            </div>
+            <div class="input-group">
+                <label for="due-date">Due Date (Optional)</label>
+                <input type="date" id="due-date">
+            </div>
+            <div class="input-group">
+                <label for="delivery-date">Delivery/Shipment Date (Optional)</label>
+                <input type="date" id="delivery-date">
+            </div>
+            <div id="items-container">
+                <h3>Add Items (Draggable to Reorder)</h3>
+                <!-- Dynamic item rows will be added here -->
+            </div>
+            <button id="add-item">Add Item <i class="fas fa-plus"></i></button>
+            <div class="input-group">
+                <label for="tax-rate">Tax Rate (%)</label>
+                <input type="number" id="tax-rate" placeholder="e.g., 10" min="0">
+            </div>
+            <div class="input-group">
+                <label for="discount">Discount (%)</label>
+                <input type="number" id="discount" placeholder="e.g., 5" min="0">
+            </div>
+            <div class="input-group">
+                <label for="currency">Currency</label>
+                <input type="text" id="currency" list="currency-list" placeholder="Search currency or country...">
+                <datalist id="currency-list"></datalist>
+            </div>
+            <div class="input-group">
+                <label for="payment-status">Payment Status</label>
+                <select id="payment-status">
+                    <option value="Pending">Pending</option>
+                    <option value="Paid">Paid</option>
+                    <option value="Outstanding">Outstanding</option>
+                    <option value="Partially Paid">Partially Paid</option>
+                    <option value="Overdue">Overdue</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="payment-methods">Accepted Payment Methods</label>
+                <textarea id="payment-methods" placeholder="e.g., Bank transfer, Credit card, PayPal, Bitcoin, Ethereum"></textarea>
+            </div>
+            <div class="input-group">
+                <label for="notes">Notes/Terms</label>
+                <textarea id="notes" placeholder="e.g., Payment due in 30 days. Thank you!"></textarea>
+            </div>
+            <div id="progress-bar-container">
+                <h3>Completion Progress</h3>
+                <div id="progress-bar"></div>
+            </div>
+            <div id="template-selector">
+                <h3>Choose Template</h3>
+                <button data-template="minimalist">Minimalist</button>
+                <button data-template="creative">Creative</button>
+                <button data-template="professional">Professional</button>
+            </div>
+        </section>
+        <section id="preview-section">
+            <h2>Live Preview</h2>
+            <div id="invoice-preview" class="template-minimalist">
+                <!-- Real-time invoice will render here -->
+            </div>
+        </section>
+    </main>
+    <footer>
+        <button id="export-pdf">Download PDF <i class="fas fa-file-pdf"></i></button>
+        <button id="export-image">Download Image <i class="fas fa-file-image"></i></button>
+        <button id="print-invoice">Print <i class="fas fa-print"></i></button>
+        <button id="share-invoice">Share via Email <i class="fas fa-envelope"></i></button>
+        <button id="clear-draft">Clear Draft <i class="fas fa-trash-alt"></i></button>
+    </footer>
+    <script src="pumpira.js"></script>
+</body>
+</html>
