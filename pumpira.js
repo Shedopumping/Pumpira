@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentTemplate = 'template-minimalist';
     let logoDataUrl = ''; // Store logo base64
     let currencySymbol = '$'; // Default symbol
+    let validSymbols = new Set(); // Set of valid currency symbols
 
     // Fetch currencies and countries from API
     fetch('https://restcountries.com/v3.1/all?fields=name,currencies,cca3')
@@ -29,9 +30,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (country.currencies) {
                     Object.entries(country.currencies).forEach(([code, details]) => {
                         if (details.symbol && details.name) {
+                            const symbol = details.symbol;
+                            validSymbols.add(symbol);
                             currencyOptions.push({
                                 code: code,
-                                symbol: details.symbol,
+                                symbol: symbol,
                                 name: details.name,
                                 country: country.name.common
                             });
@@ -64,6 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 {code: 'JPY', symbol: '¥', name: 'Japanese Yen', country: 'Japan'}
             ];
             fallback.forEach(opt => {
+                validSymbols.add(opt.symbol);
                 const option = document.createElement('option');
                 option.value = opt.symbol;
                 option.textContent = `${opt.code} (${opt.symbol}) - ${opt.name} - ${opt.country}`;
@@ -71,9 +75,15 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-    // Update currency symbol on change
-    currencyInput.addEventListener('input', () => {
-        currencySymbol = currencyInput.value;
+    // Validate currency input on change/blur
+    currencyInput.addEventListener('change', () => {
+        const value = currencyInput.value.trim();
+        if (validSymbols.has(value) && value.length > 0) {
+            currencySymbol = value;
+        } else {
+            currencyInput.value = '$';
+            currencySymbol = '$';
+        }
         updatePreview();
     });
 
