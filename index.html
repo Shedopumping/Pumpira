@@ -14,6 +14,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/3.0.1/jspdf.umd.min.js"></script>
     <!-- html2canvas for capturing preview (latest version) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- Fuzzysort for fuzzy matching in currency search -->
+    <script src="https://cdn.jsdelivr.net/npm/fuzzysort@2.0.4/fuzzysort.min.js"></script>
 </head>
 <body>
     <header>
@@ -131,6 +133,13 @@
         <button id="print-invoice">Print <i class="fas fa-print"></i></button>
         <button id="share-invoice">Share via Email <i class="fas fa-envelope"></i></button>
         <button id="clear-draft">Clear Draft <i class="fas fa-trash-alt"></i></button>
+        <div id="creator-contact">
+            <h3>Contact the Creator</h3>
+            <p>
+                <a href="mailto:shedopumping@gmail.com"><i class="fas fa-envelope"></i> shedopumping@gmail.com</a> | 
+                <a href="https://x.com/shedopumping" target="_blank"><i class="fab fa-x-twitter"></i> @shedopumping</a>
+            </p>
+        </div>
     </footer>
     <script src="pumpira.js"></script>
 </body>
