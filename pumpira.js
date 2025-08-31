@@ -20,12 +20,13 @@ document.addEventListener('DOMContentLoaded', () => {
     let logoDataUrl = ''; // Store logo base64
     let currencySymbol = '$'; // Default symbol
     let validSymbols = new Set(); // Set of valid currency symbols
+    let currencyOptions = []; // Store currency data for fuzzy search
 
     // Fetch currencies and countries from API
     fetch('https://restcountries.com/v3.1/all?fields=name,currencies,cca3')
         .then(response => response.json())
         .then(data => {
-            const currencyOptions = [];
+            currencyOptions = [];
             data.forEach(country => {
                 if (country.currencies) {
                     Object.entries(country.currencies).forEach(([code, details]) => {
@@ -36,7 +37,8 @@ document.addEventListener('DOMContentLoaded', () => {
                                 code: code,
                                 symbol: symbol,
                                 name: details.name,
-                                country: country.name.common
+                                country: country.name.common,
+                                searchString: `${code} ${details.name} ${country.name.common}`.toLowerCase()
                             });
                         }
                     });
@@ -44,36 +46,54 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             // Sort by code
             currencyOptions.sort((a, b) => a.code.localeCompare(b.code));
-            // Populate datalist with value as symbol, label as full info
-            currencyOptions.forEach(opt => {
-                const option = document.createElement('option');
-                option.value = opt.symbol;
-                option.textContent = `${opt.code} (${opt.symbol}) - ${opt.name} - ${opt.country}`;
-                currencyList.appendChild(option);
-            });
+            // Populate datalist with initial options
+            updateCurrencyList(currencyOptions);
         })
         .catch(error => {
             console.error('Error fetching currencies:', error);
             // Fallback to basic currencies
-            const fallback = [
-                {code: 'USD', symbol: '$', name: 'United States Dollar', country: 'United States'},
-                {code: 'NGN', symbol: '₦', name: 'Nigerian Naira', country: 'Nigeria'},
-                {code: 'ZAR', symbol: 'R', name: 'South African Rand', country: 'South Africa'},
-                {code: 'KES', symbol: 'KSh', name: 'Kenyan Shilling', country: 'Kenya'},
-                {code: 'GHS', symbol: '₵', name: 'Ghanaian Cedi', country: 'Ghana'},
-                {code: 'ETB', symbol: 'Br', name: 'Ethiopian Birr', country: 'Ethiopia'},
-                {code: 'EUR', symbol: '€', name: 'Euro', country: 'Eurozone'},
-                {code: 'GBP', symbol: '£', name: 'British Pound', country: 'United Kingdom'},
-                {code: 'JPY', symbol: '¥', name: 'Japanese Yen', country: 'Japan'}
+            currencyOptions = [
+                {code: 'USD', symbol: '$', name: 'United States Dollar', country: 'United States', searchString: 'usd united states dollar united states'},
+                {code: 'NGN', symbol: '₦', name: 'Nigerian Naira', country: 'Nigeria', searchString: 'ngn nigerian naira nigeria'},
+                {code: 'ZAR', symbol: 'R', name: 'South African Rand', country: 'South Africa', searchString: 'zar south african rand south africa'},
+                {code: 'KES', symbol: 'KSh', name: 'Kenyan Shilling', country: 'Kenya', searchString: 'kes kenyan shilling kenya'},
+                {code: 'GHS', symbol: '₵', name: 'Ghanaian Cedi', country: 'Ghana', searchString: 'ghs ghanaian cedi ghana'},
+                {code: 'ETB', symbol: 'Br', name: 'Ethiopian Birr', country: 'Ethiopia', searchString: 'etb ethiopian birr ethiopia'},
+                {code: 'EUR', symbol: '€', name: 'Euro', country: 'Eurozone', searchString: 'eur euro eurozone'},
+                {code: 'GBP', symbol: '£', name: 'British Pound', country: 'United Kingdom', searchString: 'gbp british pound united kingdom'},
+                {code: 'JPY', symbol: '¥', name: 'Japanese Yen', country: 'Japan', searchString: 'jpy japanese yen japan'}
             ];
-            fallback.forEach(opt => {
-                validSymbols.add(opt.symbol);
-                const option = document.createElement('option');
-                option.value = opt.symbol;
-                option.textContent = `${opt.code} (${opt.symbol}) - ${opt.name} - ${opt.country}`;
-                currencyList.appendChild(option);
-            });
+            currencyOptions.forEach(opt => validSymbols.add(opt.symbol));
+            updateCurrencyList(currencyOptions);
         });
+
+    // Function to update datalist with currency options
+    function updateCurrencyList(options) {
+        currencyList.innerHTML = '';
+        options.forEach(opt => {
+            const option = document.createElement('option');
+            option.value = opt.symbol;
+            option.textContent = `${opt.code} (${opt.symbol}) - ${opt.name} - ${opt.country}`;
+            currencyList.appendChild(option);
+        });
+    }
+
+    // Fuzzy search for currency input
+    currencyInput.addEventListener('input', () => {
+        const query = currencyInput.value.trim().toLowerCase();
+        if (query === '') {
+            updateCurrencyList(currencyOptions); // Show all options if query is empty
+            return;
+        }
+        // Use fuzzysort to filter options
+        const results = fuzzysort.go(query, currencyOptions, {
+            key: 'searchString',
+            threshold: -10000, // Allow loose matches
+            limit: 10 // Limit to top 10 results
+        });
+        const filteredOptions = results.map(result => result.obj);
+        updateCurrencyList(filteredOptions.length > 0 ? filteredOptions : currencyOptions);
+    });
 
     // Validate currency input on change/blur
     currencyInput.addEventListener('change', () => {
@@ -164,7 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 price: row.querySelector('input[placeholder="Price"]').value
             }))
         };
-        localStorage.setItem('proInvoiceDraft', JSON.stringify(data));
+        localStorage.setItem('pumpiraDraft', JSON.stringify(data));
     }
 
     // Auto-save on input changes (debounced)
@@ -176,7 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Load draft on page load
     window.addEventListener('load', () => {
-        const data = JSON.parse(localStorage.getItem('proInvoiceDraft'));
+        const data = JSON.parse(localStorage.getItem('pumpiraDraft'));
         if (data) {
             document.getElementById('business-name').value = data.businessName || '';
             document.getElementById('business-address').value = data.businessAddress || '';
@@ -215,7 +235,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Clear draft with confirmation
     clearDraftBtn.addEventListener('click', () => {
         if (confirm('Are you sure you want to clear the draft?')) {
-            localStorage.removeItem('proInvoiceDraft');
+            localStorage.removeItem('pumpiraDraft');
             document.querySelectorAll('input, textarea, select').forEach(input => input.value = '');
             logoInput.value = '';
             logoDataUrl = '';
