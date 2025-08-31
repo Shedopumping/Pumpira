@@ -198,6 +198,38 @@ button:hover {
     background: #0056b3;
 }
 
+/* Creator contact styling */
+#creator-contact {
+    margin-top: 20px;
+    text-align: center;
+}
+
+#creator-contact h3 {
+    font-size: 16px;
+    color: #007bff;
+    margin-bottom: 10px;
+}
+
+#creator-contact p {
+    font-size: 14px;
+}
+
+#creator-contact a {
+    color: #007bff;
+    text-decoration: none;
+    margin: 0 5px;
+    transition: color 0.3s;
+}
+
+#creator-contact a:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+#creator-contact i {
+    margin-right: 5px;
+}
+
 /* Animations for friendliness */
 .item-row {
     animation: fadeIn 0.5s ease-in-out;
@@ -229,6 +261,9 @@ button:hover {
     #template-selector button {
         flex: 1 1 100%; /* Full-width buttons on mobile */
         max-width: 150px; /* Limit width for aesthetics */
+    }
+    #creator-contact p {
+        font-size: 12px; /* Smaller text for mobile */
     }
 }
 
